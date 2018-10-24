@@ -8,8 +8,8 @@ A = 9                           # Random a
 B = 14                          # Random b
 M = ('а'..'я').to_a.length           # Letters in russian alphabet
 
-def read_file()
-  File.read(INFILE)
+def read_file(file)
+  File.read(file)
 end
 
 def clear_symbols(text)
@@ -32,7 +32,7 @@ def crypt(text)
 end
 
 def main()
-  crypted_text = crypt clear_symbols read_file
+  crypted_text = crypt clear_symbols read_file INFILE
   File.open( OUTFILE, 'w') { |file| file.write(crypted_text) }
 end
 
