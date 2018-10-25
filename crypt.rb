@@ -6,7 +6,7 @@ OUTFILE = 'text.cry'
 
 A = 9                           # Random a
 B = 14                          # Random b
-M = ('а'..'я').to_a.length           # Letters in russian alphabet
+M = ('а'..'я').to_a.length      # Letters in russian alphabet
 
 def read_file(file)
   File.read(file)
