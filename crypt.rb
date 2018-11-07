@@ -4,8 +4,8 @@
 INFILE = 'text.txt'
 OUTFILE = 'text.cry'
 
-A = 9                           # Random a
-B = 14                          # Random b
+A = 9                           # Pseudo random a
+B = 14                          # Pseudo random b
 M = ('а'..'я').to_a.length      # Letters in russian alphabet
 
 def read_file(file)
@@ -18,8 +18,6 @@ end
 
 def crypt(text)
   arr = ('а'..'я').to_a
-  alpha = {}
-  arr.each_with_index { |a, i| alpha[a] = i }
 
   cryparr = []
   arr.length.times do |i|
@@ -27,7 +25,7 @@ def crypt(text)
   end
 
   text.gsub(/[а-я]/) do |ch|
-    arr[ cryparr[ alpha[ ch ] ] ]
+    arr[ cryparr[ arr.index(ch) ] ]
   end
 end
 
