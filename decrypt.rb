@@ -14,8 +14,8 @@ KNOWN_FREQUENCY = {
   'б' => 0.01592,  'ч' => 0.0145,  'й' => 0.01208,  'х' => 0.00966,
   'ж' => 0.0094,  'ш' => 0.00718,  'ю' => 0.00639,  'ц' => 0.00486,
   'щ' => 0.00361,  'э' => 0.00331,  'ф' => 0.00267,  'ъ' => 0.00037,
-  'ё' => 0.00013,
 }
+
 ARR = ('а'..'я').to_a
 
 def read_file(file)
@@ -36,6 +36,12 @@ def count_summary(text)
     end
 
     all += 1
+  end
+
+  ARR.each do |ch|
+    if ! counts[ch] then
+      counts[ch] = 0
+    end
   end
   counts.each { |k, v| counts[k] = v.to_f / all}
 end
@@ -63,7 +69,6 @@ def decrypt_text(a, b, text)
 end
 
 def translation_fine(text)
-
   words = text.split
   matched = 0
   words.each do |word|
@@ -77,24 +82,37 @@ end
 def get_decrypting_vars(base, change, text)
 
   # Trying to guess A and B using frequencies
-  base_x = ARR.index(base)
-  change_x = ARR.index(change)
+  base_x0 = ARR.index(base[0])
+  change_x0 = ARR.index(change[0])
+  base_x1 = ARR.index(base[1])
+  change_x1 = ARR.index(change[1])
 
+  # To find A we need to use this formula:
+  #     change_x1 - base_x0 - 32n
+  # A = -------------------------
+  #        base_x1 - change_x1
+  # n is a number from 0 to 32, so A is a natural number
 
-  # Naive running through possible pairs of As and Bs
-  few_words = text.split.first(4).join(' ')
-  rng = (0...ARR.length).to_a
-  rng.product(rng).each do |a,b|
-    decrypted_text = decrypt_text(a, b, few_words)
+  formula = lambda { |a1, a2, b1, b2, n|
+    (b2 - a1 - ARR.length * n).to_f / (a2 - b1).to_f
+  }
 
-    # Guess using dictionary if the words decrypted are real
-    if translation_fine(decrypted_text) then
-      return a, b
+  n = 0
+  fine = nil
+  while n < ARR.length and ! fine
+    a = formula.call(base_x0, base_x1, change_x0, change_x1, n)
+
+    if a.is_a? Integer then
+      fine = true
     end
+
+    n += 1
   end
 
-  # Return nil or these very values A and/or B
-  nil
+  if fine then
+    b = ARR.length * n + base_x0 - a * change_x0
+    return a, b
+  end
 end
 
 ##
@@ -106,16 +124,31 @@ def decrypt(text, freq)
   sorted_known = KNOWN_FREQUENCY.sort_by {|k,v| v}.reverse
   sorted_got   = freq.sort_by {|k,v| v}.reverse
 
-  sorted_got.each_with_index do |freq, index|
-
-    a, b =  get_decrypting_vars( freq[0], sorted_known[index][0], text)
+  sorted_got.each_with_index do |_, index|
+    a, b =  get_decrypting_vars(sorted_got[index,2].map {|k, v| k},
+                                sorted_known[index,2].map {|k, v| k}, text)
     if a and b
+      puts "Frequency algorithm worked!"
       return decrypt_text(a, b, text)
-    else
-      raise Exception("Coundn't find correct decripting vars")
     end
-
+    break if index+2 == sorted_got.length
   end
+
+  # Naive running through possible pairs of As and Bs
+  few_words = text.split.first(4).join(' ')
+  rng = (0...ARR.length).to_a
+  rng.product(rng).each do |a,b|
+    decrypted_text = decrypt_text(a, b, few_words)
+
+    # Guess using dictionary if the words decrypted are real
+    if translation_fine(decrypted_text) then
+      puts "Naive algorithm worked."
+      return decrypt_text(a, b, text)
+    end
+  end
+
+  # Return nil or these very values A and/or B
+  nil
 end
 
 

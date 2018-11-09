@@ -11,6 +11,8 @@ end
 
 task :clean do
   rm Dir.glob('*~')
+  rm Dir.glob('#*')
+  rm Dir.glob('.#*')
   File.exist? 'text.cry' and rm 'text.cry'
 end
 
