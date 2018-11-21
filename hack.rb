@@ -37,16 +37,16 @@ def get_decrypting_vars(base, change, text)
   change_x1 = ARR.index(change[1])
 
   # To find A we need to use this formula:
-  #     change_x1 - base_x0 - 32n
+  #     change_x0 - change_x1 - 32n
   # A = -------------------------
-  #        base_x1 - change_x0
+  #        base_x0 - base_x1
   # n is a number from 0 to 32, so A is a natural number
 
   formula = lambda { |a0, a1, b0, b1, n|
     (b0 - b1 - ARR.length * n).to_f / (a0 - a1).to_f
   }
 
-  n = -32
+  n = -ARR.length
   fine = nil
   while n < ARR.length and ! fine
     a = formula.call(base_x0, base_x1, change_x0, change_x1, n)
@@ -76,9 +76,6 @@ def decrypt(text, freq)
   # {'a' => 0.21312} ==> [['a', 0.21312]]
   sorted_known = KNOWN_FREQUENCY.sort_by {|k,v| v}.reverse
   sorted_got   = freq.sort_by {|k,v| v}.reverse
-  sorted_got.each do |k,v|
-    print "#{k}, #{v}\n"
-  end
   result = nil
   sorted_got.each_with_index do |_, index|
     a, b =  get_decrypting_vars(
