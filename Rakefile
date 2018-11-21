@@ -5,8 +5,13 @@ task :crypt do
 end
 
 task :decrypt do
-  puts 'Decrypting... May take a while.'
+  puts 'Decrypting:'
   ruby 'decrypt.rb'
+end
+
+task :hack do
+  puts 'Hacking... May take a while'
+  ruby 'hack.rb'
 end
 
 task :clean do
@@ -16,5 +21,4 @@ task :clean do
   File.exist? 'text.cry' and rm 'text.cry'
 end
 
-task :default => [:crypt, :decrypt]
-
+task :default => [:crypt, :hack]

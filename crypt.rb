@@ -4,8 +4,8 @@
 INFILE = 'text.txt'
 OUTFILE = 'text.cry'
 
-A = 5                # Pseudo random a
-B = 21               # Pseudo random b
+A = 7                           # Pseudo random a
+B = 27                          # Pseudo random b
 M = ('а'..'я').to_a.length      # Letters in russian alphabet
 
 def read_file(file)
