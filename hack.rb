@@ -96,7 +96,7 @@ def decrypt(text, freq)
 
     if result and translation_fine(result.split(' ').first(10).join(' ')) then
       puts "Frequency algorithm worked!"
-      puts "A: #{a}, B: #{b}"
+      puts "A: #{a}#{a_swp}, B: #{b}#{b_swp}"
       return result
     end
 
