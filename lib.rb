@@ -37,7 +37,7 @@ KNOWN_FREQUENCY = {
   'ф' => 0.00267,
 }
 
-# Made for text.txt
+# # Made for text.txt
 # KNOWN_FREQUENCY = {
 # 'о' => 2013,
 # 'е' => 1563,

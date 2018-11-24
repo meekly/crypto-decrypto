@@ -43,25 +43,33 @@ def get_decrypting_vars(base, change, text)
   # n is a number from 0 to 32, so A is a natural number
 
   formula = lambda { |a0, a1, b0, b1, n|
-    (b0 - b1 - ARR.length * n).to_f / (a0 - a1).to_f
+    (b0 - b1 + ARR.length * n).to_f / (a0 - a1).to_f
   }
+
+  some = text.split(' ').first(10).join(' ')
 
   n = -ARR.length
   fine = nil
   while n < ARR.length and ! fine
     a = formula.call(base_x0, base_x1, change_x0, change_x1, n)
 
-    if a % 1 == 0 and a > 0 and ARR.length % a != 0 then
+    if a % 1 == 0 and a >= 0 and a <= 32 and ARR.length % a != 0 then
       fine = true
     end
 
     if fine then
-      b = ARR.length * n + base_x0 - a * change_x0
-      if b > 0
-        return a, b
-      else
-        fine = false
+      k = -ARR.length
+
+      while k < ARR.length do
+        b = ARR.length * k + base_x0 - a * change_x0
+        if b >= 0 and
+          b <= 32 and
+          translation_fine(decrypt_text(a, b, some)) then
+          return a, b
+        end
+        k += 1
       end
+      fine = false
     end
     n += 1
   end
@@ -92,7 +100,6 @@ def decrypt(text, freq)
     elsif a_swp and b_swp
       result = decrypt_text(a_swp, b_swp, text)
     end
-
 
     if result and translation_fine(result.split(' ').first(10).join(' ')) then
       puts "Frequency algorithm worked!"
